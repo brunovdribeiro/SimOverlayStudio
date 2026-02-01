@@ -1,4 +1,4 @@
-# SimOverlay Studio - Phase 1 Implementation
+# SimOverlay Studio - Phase 1 & 2 Implementation
 
 ## Project Structure
 
