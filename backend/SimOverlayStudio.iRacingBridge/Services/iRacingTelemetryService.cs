@@ -1,4 +1,4 @@
-using iRSDKSharp;
+using irsdkSharp;
 using SimOverlayStudio.Shared.Models;
 
 namespace SimOverlayStudio.iRacingBridge.Services;
@@ -8,20 +8,18 @@ namespace SimOverlayStudio.iRacingBridge.Services;
 /// </summary>
 public class iRacingTelemetryService
 {
-    private readonly iRSDKWrapper _sdkWrapper;
+    private readonly IRacingSDK _sdk;
     private readonly ILogger<iRacingTelemetryService> _logger;
     
     // Events for broadcasting data
     public event EventHandler<TelemetryData>? OnTelemetryData;
     
     private bool _isConnected;
-    private int _lastSessionId = -1;
-    private int _lastLapCount = -1;
 
     public iRacingTelemetryService(ILogger<iRacingTelemetryService> logger)
     {
         _logger = logger;
-        _sdkWrapper = new iRSDKWrapper();
+        _sdk = new IRacingSDK();
     }
 
     /// <summary>
@@ -30,7 +28,7 @@ public class iRacingTelemetryService
     public void StartPolling()
     {
         _logger.LogInformation("Starting iRacing telemetry polling");
-        _isConnected = _sdkWrapper.Startup();
+        _isConnected = _sdk.IsConnected();
         
         if (!_isConnected)
         {
@@ -45,58 +43,54 @@ public class iRacingTelemetryService
     {
         try
         {
-            if (!_isConnected)
-            {
-                if (!_sdkWrapper.Startup())
-                    return null;
-                _isConnected = true;
-            }
-
-            if (!_sdkWrapper.IsConnected)
+            if (!_sdk.IsConnected())
             {
                 _isConnected = false;
                 return null;
             }
 
+            _isConnected = true;
+
             var telemetryData = new TelemetryData
             {
                 Timestamp = DateTime.UtcNow,
-                SessionTickCount = _sdkWrapper.Header.SessionTickCount
+                SessionTickCount = 0 // Will be updated when we have session info
             };
 
             // Vehicle telemetry
-            telemetryData.Speed = _sdkWrapper.GetFloat("Speed");
-            telemetryData.RPM = _sdkWrapper.GetFloat("RPM");
-            telemetryData.Gear = _sdkWrapper.GetInt("Gear");
-            telemetryData.Throttle = _sdkWrapper.GetFloat("Throttle");
-            telemetryData.Brake = _sdkWrapper.GetFloat("Brake");
-            telemetryData.Clutch = _sdkWrapper.GetFloat("Clutch");
+            telemetryData.Speed = GetFloat("Speed");
+            telemetryData.RPM = GetFloat("RPM");
+            telemetryData.Gear = GetInt("Gear");
+            telemetryData.Throttle = GetFloat("Throttle");
+            telemetryData.Brake = GetFloat("Brake");
+            telemetryData.Clutch = GetFloat("Clutch");
 
-            // Position
-            telemetryData.PositionX = _sdkWrapper.GetDouble("CarIdxX", 0);
-            telemetryData.PositionY = _sdkWrapper.GetDouble("CarIdxY", 0);
-            telemetryData.PositionZ = _sdkWrapper.GetDouble("CarIdxZ", 0);
+            // Position (using player car index)
+            telemetryData.PositionX = GetDouble("CarIdxX");
+            telemetryData.PositionY = GetDouble("CarIdxY");
+            telemetryData.PositionZ = GetDouble("CarIdxZ");
 
             // Session data
-            telemetryData.LapCount = _sdkWrapper.GetInt("Lap");
-            telemetryData.CurrentLapTime = _sdkWrapper.GetFloat("LapCurrentLapTime");
-            telemetryData.LastLapTime = _sdkWrapper.GetFloat("LastLapTime");
-            telemetryData.BestLapTime = _sdkWrapper.GetFloat("BestLapTime");
-            telemetryData.IsOnTrack = _sdkWrapper.GetInt("OnPitRoad") == 0;
+            telemetryData.LapCount = GetInt("Lap");
+            telemetryData.CurrentLapTime = GetFloat("LapCurrentLapTime");
+            telemetryData.LastLapTime = GetFloat("LapLastLapTime");
+            telemetryData.BestLapTime = GetFloat("LapBestLapTime");
+            telemetryData.IsOnTrack = GetInt("OnPitRoad") == 0;
 
             // Fuel
-            telemetryData.FuelLevel = _sdkWrapper.GetFloat("FuelLevel");
-            telemetryData.FuelCapacity = _sdkWrapper.GetFloat("FuelCapacity");
-            telemetryData.FuelUsePerLap = _sdkWrapper.GetFloat("FuelUsePerLap");
+            telemetryData.FuelLevel = GetFloat("FuelLevel");
+            telemetryData.FuelCapacity = GetFloat("FuelLevelPct") > 0 ? GetFloat("FuelLevel") / GetFloat("FuelLevelPct") : 0;
+            telemetryData.FuelUsePerLap = GetFloat("FuelUsePerHour") / 60.0f; // Approximate
 
-            // Tires
+            // Tires (using LF, RF, LR, RR indices)
+            string[] tirePositions = { "LF", "RF", "LR", "RR" };
             for (int i = 0; i < 4; i++)
             {
                 telemetryData.Tires[i] = new TireData
                 {
-                    Temperature = _sdkWrapper.GetFloat($"TireTemp_{i}"),
-                    Wear = _sdkWrapper.GetFloat($"TireWear_{i}"),
-                    Pressure = _sdkWrapper.GetFloat($"TirePressure_{i}")
+                    Temperature = GetFloat($"TireTemp{tirePositions[i]}"),
+                    Wear = GetFloat($"TireWear{tirePositions[i]}"),
+                    Pressure = GetFloat($"TirePressure{tirePositions[i]}")
                 };
             }
 
@@ -111,14 +105,80 @@ public class iRacingTelemetryService
     }
 
     /// <summary>
+    /// Helper method to get float value from SDK
+    /// </summary>
+    private float GetFloat(string varName)
+    {
+        try
+        {
+            var data = _sdk.GetData(varName);
+            return data switch
+            {
+                float f => f,
+                double d => (float)d,
+                int i => (float)i,
+                _ => 0f
+            };
+        }
+        catch
+        {
+            return 0f;
+        }
+    }
+
+    /// <summary>
+    /// Helper method to get int value from SDK
+    /// </summary>
+    private int GetInt(string varName)
+    {
+        try
+        {
+            var data = _sdk.GetData(varName);
+            return data switch
+            {
+                int i => i,
+                float f => (int)f,
+                double d => (int)d,
+                _ => 0
+            };
+        }
+        catch
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// Helper method to get double value from SDK
+    /// </summary>
+    private double GetDouble(string varName)
+    {
+        try
+        {
+            var data = _sdk.GetData(varName);
+            return data switch
+            {
+                double d => d,
+                float f => (double)f,
+                int i => (double)i,
+                _ => 0.0
+            };
+        }
+        catch
+        {
+            return 0.0;
+        }
+    }
+
+    /// <summary>
     /// Shutdown the connection to iRacing
     /// </summary>
     public void Shutdown()
     {
         _logger.LogInformation("Shutting down iRacing telemetry service");
-        _sdkWrapper?.Dispose();
+        // IRacingSDK doesn't need explicit disposal
         _isConnected = false;
     }
 
-    public bool IsConnected => _isConnected && _sdkWrapper?.IsConnected == true;
+    public bool IsConnected => _isConnected && _sdk?.IsConnected() == true;
 }

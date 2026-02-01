@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SimOverlayStudio.iRacingBridge")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8737259ef7018fb89ed17a03a6871c40fcafde34")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+42804dbb434bad531b29c00ebfe3ef74cdd91da2")]
 [assembly: System.Reflection.AssemblyProductAttribute("SimOverlayStudio.iRacingBridge")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SimOverlayStudio.iRacingBridge")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

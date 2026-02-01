@@ -22,8 +22,7 @@ public class TelemetryWebSocketServer
         _port = port;
         _logger = logger;
         
-        var httpServer = new HttpServer(IPAddress.Loopback, port);
-        _server = new WebSocketServer(httpServer);
+        _server = new WebSocketServer(IPAddress.Loopback, port);
     }
 
     /// <summary>
@@ -39,14 +38,8 @@ public class TelemetryWebSocketServer
                 return _broadcaster;
             });
 
-            if (_server.Start())
-            {
-                _logger.LogInformation("WebSocket server started on ws://localhost:{Port}/telemetry", _port);
-            }
-            else
-            {
-                _logger.LogError("Failed to start WebSocket server");
-            }
+            _server.Start();
+            _logger.LogInformation("WebSocket server started on ws://localhost:{Port}/telemetry", _port);
         }
         catch (Exception ex)
         {
@@ -98,7 +91,7 @@ public class TelemetryBroadcaster : WebSocketBehavior
         _logger.LogInformation("Client disconnected: {ClientId}", ID);
     }
 
-    protected override void OnError(ErrorEventArgs e)
+    protected override void OnError(WebSocketSharp.ErrorEventArgs e)
     {
         _logger.LogError("WebSocket error: {Message}", e.Message);
     }
