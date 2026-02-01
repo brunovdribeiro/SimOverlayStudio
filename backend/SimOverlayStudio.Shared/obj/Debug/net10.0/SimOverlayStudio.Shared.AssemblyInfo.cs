@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SimOverlayStudio.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+981d9fec40f59d058c704394ebef6dfd429f76b2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8737259ef7018fb89ed17a03a6871c40fcafde34")]
 [assembly: System.Reflection.AssemblyProductAttribute("SimOverlayStudio.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SimOverlayStudio.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

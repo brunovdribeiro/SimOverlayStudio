@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Sources\\SimOverlayStudio\\backend\\SimOverlayStudio.Shared\\SimOverlayStudio.Shared.csproj": {}
+    "/home/runner/work/SimOverlayStudio/SimOverlayStudio/backend/SimOverlayStudio.Shared/SimOverlayStudio.Shared.csproj": {}
   },
   "projects": {
-    "C:\\Sources\\SimOverlayStudio\\backend\\SimOverlayStudio.Shared\\SimOverlayStudio.Shared.csproj": {
+    "/home/runner/work/SimOverlayStudio/SimOverlayStudio/backend/SimOverlayStudio.Shared/SimOverlayStudio.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Sources\\SimOverlayStudio\\backend\\SimOverlayStudio.Shared\\SimOverlayStudio.Shared.csproj",
+        "projectUniqueName": "/home/runner/work/SimOverlayStudio/SimOverlayStudio/backend/SimOverlayStudio.Shared/SimOverlayStudio.Shared.csproj",
         "projectName": "SimOverlayStudio.Shared",
-        "projectPath": "C:\\Sources\\SimOverlayStudio\\backend\\SimOverlayStudio.Shared\\SimOverlayStudio.Shared.csproj",
-        "packagesPath": "C:\\Users\\bruno\\.nuget\\packages\\",
-        "outputPath": "C:\\Sources\\SimOverlayStudio\\backend\\SimOverlayStudio.Shared\\obj\\",
+        "projectPath": "/home/runner/work/SimOverlayStudio/SimOverlayStudio/backend/SimOverlayStudio.Shared/SimOverlayStudio.Shared.csproj",
+        "packagesPath": "/home/runner/.nuget/packages/",
+        "outputPath": "/home/runner/work/SimOverlayStudio/SimOverlayStudio/backend/SimOverlayStudio.Shared/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\bruno\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/runner/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.100/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.102/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
