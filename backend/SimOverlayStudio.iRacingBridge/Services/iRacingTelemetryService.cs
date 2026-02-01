@@ -78,8 +78,9 @@ public class iRacingTelemetryService
             telemetryData.IsOnTrack = GetInt("OnPitRoad") == 0;
 
             // Fuel
+            var fuelLevelPct = GetFloat("FuelLevelPct");
             telemetryData.FuelLevel = GetFloat("FuelLevel");
-            telemetryData.FuelCapacity = GetFloat("FuelLevelPct") > 0 ? GetFloat("FuelLevel") / GetFloat("FuelLevelPct") : 0;
+            telemetryData.FuelCapacity = fuelLevelPct > 0 ? telemetryData.FuelLevel / fuelLevelPct : 0;
             telemetryData.FuelUsePerLap = GetFloat("FuelUsePerHour") / 60.0f; // Approximate
 
             // Tires (using LF, RF, LR, RR indices)
@@ -120,8 +121,9 @@ public class iRacingTelemetryService
                 _ => 0f
             };
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogDebug(ex, "Error getting float value for {VarName}", varName);
             return 0f;
         }
     }
@@ -142,8 +144,9 @@ public class iRacingTelemetryService
                 _ => 0
             };
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogDebug(ex, "Error getting int value for {VarName}", varName);
             return 0;
         }
     }
@@ -164,8 +167,9 @@ public class iRacingTelemetryService
                 _ => 0.0
             };
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogDebug(ex, "Error getting double value for {VarName}", varName);
             return 0.0;
         }
     }
