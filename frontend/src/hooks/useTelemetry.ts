@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { TelemetryData } from '../types/TelemetryData';
+import type { TelemetryData } from '../types/TelemetryData';
 
 const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/telemetry';
 

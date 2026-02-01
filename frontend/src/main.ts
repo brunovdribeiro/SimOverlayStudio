@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import { isDev, createWindow } from './window';
-import * as path from 'path';
+import { createWindow } from './window';
 
 // Create window variable to keep reference
 let mainWindow: BrowserWindow | null;
@@ -24,13 +23,13 @@ app.on('activate', () => {
 });
 
 // IPC handlers for overlay control
-ipcMain.on('toggle-click-through', (event, enabled: boolean) => {
+ipcMain.on('toggle-click-through', (_event, enabled: boolean) => {
   if (mainWindow) {
     mainWindow.setIgnoreMouseEvents(enabled);
   }
 });
 
-ipcMain.on('set-always-on-top', (event, alwaysOnTop: boolean) => {
+ipcMain.on('set-always-on-top', (_event, alwaysOnTop: boolean) => {
   if (mainWindow) {
     mainWindow.setAlwaysOnTop(alwaysOnTop);
   }
