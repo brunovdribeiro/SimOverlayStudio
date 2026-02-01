@@ -1,5 +1,4 @@
 import { app, Tray, Menu, nativeImage, BrowserWindow } from 'electron';
-import * as path from 'path';
 import { BackendProcessManager } from './backend-manager';
 
 export class SystemTrayManager {

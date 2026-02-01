@@ -59,8 +59,18 @@ npm run dev:electron    # Run with Electron (in another terminal)
 
 The Electron app will:
 - Open a transparent, always-on-top overlay window
+- Provide system tray integration for easy access
+- Manage backend process lifecycle (start/stop/restart)
 - Connect to backend via WebSocket
 - Display real-time telemetry widgets
+- Offer window controls (position, size, opacity)
+
+### Control Panel
+
+The app includes a Control Panel widget for managing:
+- **Backend Status**: View backend process status and control it (start/stop/restart)
+- **Window Controls**: Adjust opacity, position, and window actions
+- **System Tray**: Access all features from the system tray icon
 
 ### Building
 
@@ -137,7 +147,22 @@ npm run build:electron  # Package Electron app
 }
 ```
 
-## Next Steps (Phase 2)
+## Phase 3: Electron Shell Configuration ✅ COMPLETE
+
+**Status**: Completed on 2026-02-01
+
+All features successfully implemented:
+- ✅ Transparent, always-on-top, click-through window
+- ✅ Window management (positioning, resizing, opacity control)
+- ✅ System tray integration with context menu
+- ✅ Backend process management (start/stop/restart)
+- ✅ Enhanced IPC communication between Electron and React
+- ✅ Minimize to tray functionality
+- ✅ Real-time backend status monitoring
+
+See [Phase3_Implementation.md](./docs/Phase3_Implementation.md) for detailed documentation.
+
+## Next Steps (Phase 4)
 
 - [ ] Advanced HUD widgets (Relative, Delta Bar, Fuel Strategy)
 - [ ] Optimized React rendering with useMemo/useCallback
