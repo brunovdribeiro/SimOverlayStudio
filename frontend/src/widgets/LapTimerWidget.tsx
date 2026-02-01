@@ -1,4 +1,4 @@
-import { TelemetryData } from '../types/TelemetryData';
+import type { TelemetryData } from '../types/TelemetryData';
 
 interface Props {
   telemetry: TelemetryData;

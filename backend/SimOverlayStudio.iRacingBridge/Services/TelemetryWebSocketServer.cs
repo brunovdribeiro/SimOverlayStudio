@@ -15,15 +15,13 @@ public class TelemetryWebSocketServer
     private readonly WebSocketServer _server;
     private readonly ILogger<TelemetryWebSocketServer> _logger;
     private readonly int _port;
-    private TelemetryBroadcaster? _broadcaster;
 
     public TelemetryWebSocketServer(int port, ILogger<TelemetryWebSocketServer> logger)
     {
         _port = port;
         _logger = logger;
         
-        var httpServer = new HttpServer(IPAddress.Loopback, port);
-        _server = new WebSocketServer(httpServer);
+        _server = new WebSocketServer(IPAddress.Any, port);
     }
 
     /// <summary>
@@ -33,20 +31,10 @@ public class TelemetryWebSocketServer
     {
         try
         {
-            _server.AddWebSocketService<TelemetryBroadcaster>("/telemetry", () =>
-            {
-                _broadcaster ??= new TelemetryBroadcaster(_logger);
-                return _broadcaster;
-            });
+            _server.AddWebSocketService<TelemetryBroadcaster>("/telemetry", () => new TelemetryBroadcaster(_logger));
 
-            if (_server.Start())
-            {
-                _logger.LogInformation("WebSocket server started on ws://localhost:{Port}/telemetry", _port);
-            }
-            else
-            {
-                _logger.LogError("Failed to start WebSocket server");
-            }
+            _server.Start();
+            _logger.LogInformation("WebSocket server started on ws://localhost:{Port}/telemetry", _port);
         }
         catch (Exception ex)
         {
@@ -59,7 +47,15 @@ public class TelemetryWebSocketServer
     /// </summary>
     public void BroadcastTelemetry(TelemetryData data)
     {
-        _broadcaster?.BroadcastData(data);
+        try
+        {
+            var json = JsonSerializer.Serialize(data);
+            _server.WebSocketServices["/telemetry"].Sessions.Broadcast(json);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error broadcasting telemetry data");
+        }
     }
 
     /// <summary>
@@ -80,7 +76,8 @@ public class TelemetryWebSocketServer
 public class TelemetryBroadcaster : WebSocketBehavior
 {
     private readonly ILogger<TelemetryWebSocketServer> _logger;
-    private static readonly ConcurrentBag<string> _clientIds = new();
+
+    public TelemetryBroadcaster() : this(null!) { }
 
     public TelemetryBroadcaster(ILogger<TelemetryWebSocketServer> logger)
     {
@@ -89,33 +86,16 @@ public class TelemetryBroadcaster : WebSocketBehavior
 
     protected override void OnOpen()
     {
-        _clientIds.Add(ID);
-        _logger.LogInformation("Client connected: {ClientId}", ID);
+        _logger?.LogInformation("Client connected: {ClientId}", ID);
     }
 
     protected override void OnClose(CloseEventArgs e)
     {
-        _logger.LogInformation("Client disconnected: {ClientId}", ID);
+        _logger?.LogInformation("Client disconnected: {ClientId}", ID);
     }
 
-    protected override void OnError(ErrorEventArgs e)
+    protected override void OnError(WebSocketSharp.ErrorEventArgs e)
     {
-        _logger.LogError("WebSocket error: {Message}", e.Message);
-    }
-
-    /// <summary>
-    /// Broadcast telemetry data to all connected clients
-    /// </summary>
-    public void BroadcastData(TelemetryData data)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(data);
-            Sessions.Broadcast(json);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error broadcasting telemetry data");
-        }
+        _logger?.LogError("WebSocket error: {Message}", e.Message);
     }
 }
