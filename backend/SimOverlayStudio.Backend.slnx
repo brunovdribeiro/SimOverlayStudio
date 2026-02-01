@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SimOverlayStudio.iRacingBridge/SimOverlayStudio.iRacingBridge.csproj" />
+  <Project Path="SimOverlayStudio.Shared/SimOverlayStudio.Shared.csproj" />
+</Solution>
